@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Grid, Button, Typography } from "@material-ui/core";
 
-export default function Room() {
+export default function Room({ clearCode }) {
   const navigate = useNavigate();
   const { roomCode } = useParams();
   const [votesToSkip, setVotesToSkip] = useState(2);
@@ -11,11 +11,18 @@ export default function Room() {
 
   const getRoomDetails = async () => {
     const response = await fetch(`/api/get-room?code=${roomCode}`);
-    const data = await response.json();
+    const status = await response.status;
 
-    setGuestCanPause(data.guest_can_pause);
-    setVotesToSkip(data.votes_to_skip);
-    setIsHost(data.is_host);
+    if (status === 200) {
+      const data = await response.json();
+
+      setGuestCanPause(data.guest_can_pause);
+      setVotesToSkip(data.votes_to_skip);
+      setIsHost(data.is_host);
+    } else {
+      clearCode();
+      navigate("/");
+    }
   };
 
   useEffect(() => {
@@ -28,6 +35,7 @@ export default function Room() {
       headers: { "Content-Type": "application/json" },
     };
     fetch("/api/leave-room", requestOptions).then((_response) => {
+      clearCode();
       navigate("/");
     });
   };

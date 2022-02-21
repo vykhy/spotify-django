@@ -6,17 +6,11 @@ import RoomJoinPage from "./RoomJoinPage";
 import CreateRoom from "./CreateRoom";
 import Room from "./Room";
 
-const RenderHomePage = () => {
+const RenderHomePage = ({ code }) => {
   const navigate = useNavigate();
-  const [roomCode, setRoomCode] = useState(null);
+  const [roomCode, setRoomCode] = useState(code);
 
-  const a = async () => {
-    const response = await fetch("/api/user-in-room");
-    const data = await response.json();
-    setRoomCode(data.code);
-  };
   useEffect(() => {
-    a();
     roomCode ? navigate(`/room/${roomCode}`) : setRoomCode(null);
   });
   return (
@@ -46,13 +40,30 @@ const RenderHomePage = () => {
 };
 
 export default function Home() {
+  const [roomCode, setRoomCode] = useState(null);
+
+  const a = async () => {
+    const response = await fetch("/api/user-in-room");
+    const data = await response.json();
+    setRoomCode(data.code);
+  };
+  useEffect(() => {
+    a();
+  });
+
+  const clearCode = () => {
+    setRoomCode(null);
+  };
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<RenderHomePage />} />
+        <Route path="/" element={<RenderHomePage code={roomCode} />} />
         <Route path="/create" element={<CreateRoom />} />
         <Route path="/join" element={<RoomJoinPage />} />
-        <Route path="/room/:roomCode" element={<Room />} />
+        <Route
+          path="/room/:roomCode"
+          element={<Room clearCode={clearCode} />}
+        />
       </Routes>
     </Router>
   );
