@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import {
   Grid,
@@ -12,6 +13,7 @@ import { Radio, RadioGroup, FormControlLabel } from "@material-ui/core";
 
 export default function CreateRoom() {
   const defaultVotes = 2;
+  const history = useNavigate();
   const [guestCanPause, setGuestCanPause] = useState(true);
   const [votesToSkip, setVotesToSkip] = useState(defaultVotes);
 
@@ -35,7 +37,8 @@ export default function CreateRoom() {
       }),
     };
     const response = await fetch("/api/create/", requestOptions);
-    console.log(response.data);
+    const data = await response.json();
+    history(`/room/${data.code}`);
   };
 
   return (
