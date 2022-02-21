@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { Grid, Button, Typography } from "@material-ui/core";
 
 export default function Room() {
+  const navigate = useNavigate();
   const { roomCode } = useParams();
   const [votesToSkip, setVotesToSkip] = useState(2);
   const [guestCanPause, setGuestCanPause] = useState(false);
@@ -20,12 +22,45 @@ export default function Room() {
     getRoomDetails();
   }, []);
 
+  const leaveRoom = async () => {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    };
+    fetch("/api/leave-room", requestOptions).then((_response) => {
+      navigate("/");
+    });
+  };
+
   return (
     <div>
-      <p>{roomCode}</p>
-      <p>{votesToSkip}</p>
-      <p>{guestCanPause.toString()} </p>
-      <p>{isHost.toString()} </p>
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Code: {roomCode}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Votes required to skip: {votesToSkip}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Guest can pause: {guestCanPause.toString()}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Host: {isHost.toString()}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button color="primary" variant="outlined" onClick={leaveRoom}>
+            Leave Room
+          </Button>
+        </Grid>
+      </Grid>
     </div>
   );
 }
