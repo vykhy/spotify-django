@@ -14,7 +14,11 @@ import Home from "./Home";
 // }
 
 export default function App() {
-  return <Home />;
+  return (
+    <div className="center">
+      <Home />
+    </div>
+  );
 }
 
 const appDiv = document.getElementById("app");
