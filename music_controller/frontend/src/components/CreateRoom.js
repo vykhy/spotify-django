@@ -11,9 +11,10 @@ import {
 import { Link } from "react-router-dom";
 import { Radio, RadioGroup, FormControlLabel } from "@material-ui/core";
 
-export default function CreateRoom() {
+export default function CreateRoom({ update }) {
   const defaultVotes = 2;
   const history = useNavigate();
+
   const [guestCanPause, setGuestCanPause] = useState(true);
   const [votesToSkip, setVotesToSkip] = useState(defaultVotes);
 
@@ -94,14 +95,16 @@ export default function CreateRoom() {
       </Grid>
       <Grid item xs={12} align="center">
         <Button color="primary" variant="contained" onClick={handleCreateRoom}>
-          Create a room
+          {update ? "Update Settings" : "Create a room"}
         </Button>
       </Grid>
-      <Grid item xs={12} align="center">
-        <Button color="secondary" variant="contained" to="/" component={Link}>
-          Back
-        </Button>
-      </Grid>
+      {!update ? (
+        <Grid item xs={12} align="center">
+          <Button color="secondary" variant="contained" to="/" component={Link}>
+            Back
+          </Button>
+        </Grid>
+      ) : null}
     </Grid>
   );
 }

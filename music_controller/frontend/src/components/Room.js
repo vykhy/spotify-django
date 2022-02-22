@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Grid, Button, Typography } from "@material-ui/core";
+import CreateRoom from "./CreateRoom";
 
 export default function Room({ clearCode }) {
   const navigate = useNavigate();
   const { roomCode } = useParams();
+
   const [votesToSkip, setVotesToSkip] = useState(2);
   const [guestCanPause, setGuestCanPause] = useState(false);
   const [isHost, setIsHost] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const getRoomDetails = async () => {
     const response = await fetch(`/api/get-room?code=${roomCode}`);
@@ -40,7 +43,51 @@ export default function Room({ clearCode }) {
     });
   };
 
-  return (
+  const renderSettingsButton = () => {
+    return (
+      <Grid item xs={12} align="center">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setShowSettings(true)}
+        >
+          Settings
+        </Button>
+      </Grid>
+    );
+  };
+
+  const updateCallBack = () => {
+    const a = "a";
+  };
+  const renderSettings = () => {
+    return (
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <CreateRoom
+            update="true"
+            votesToSkip={votesToSkip}
+            guestCanPause={guestCanPause}
+            roomCode={roomCode}
+            updateCallBack={updateCallBack}
+          />
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => setShowSettings(false)}
+          >
+            Hide settings
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  };
+
+  return showSettings ? (
+    renderSettings()
+  ) : (
     <div>
       <Grid container spacing={1}>
         <Grid item xs={12} align="center">
@@ -63,6 +110,7 @@ export default function Room({ clearCode }) {
             Host: {isHost.toString()}
           </Typography>
         </Grid>
+        {isHost ? renderSettingsButton() : null}
         <Grid item xs={12} align="center">
           <Button color="primary" variant="outlined" onClick={leaveRoom}>
             Leave Room
