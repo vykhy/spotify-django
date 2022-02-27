@@ -57,19 +57,16 @@ export default function Room({ clearCode }) {
     );
   };
 
-  const updateCallBack = () => {
-    const a = "a";
-  };
   const renderSettings = () => {
     return (
       <Grid container spacing={1}>
         <Grid item xs={12} align="center">
           <CreateRoom
             update="true"
-            votesToSkip={votesToSkip}
-            guestCanPause={guestCanPause}
+            votes={votesToSkip}
+            canPause={guestCanPause}
             roomCode={roomCode}
-            updateCallBack={updateCallBack}
+            updateCallback={getRoomDetails}
           />
         </Grid>
         <Grid item xs={12} align="center">

@@ -7,16 +7,27 @@ import {
   TextField,
   FormHelperText,
   FormControl,
+  Collapse,
 } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
 import { Link } from "react-router-dom";
 import { Radio, RadioGroup, FormControlLabel } from "@material-ui/core";
 
-export default function CreateRoom({ update }) {
-  const defaultVotes = 2;
+export default function CreateRoom(props) {
+  const {
+    votes = 2,
+    canPause = true,
+    update = false,
+    roomCode = null,
+    updateCallback = () => {},
+  } = props;
+
   const history = useNavigate();
 
-  const [guestCanPause, setGuestCanPause] = useState(true);
-  const [votesToSkip, setVotesToSkip] = useState(defaultVotes);
+  const [guestCanPause, setGuestCanPause] = useState(canPause);
+  const [votesToSkip, setVotesToSkip] = useState(votes);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleVotesChange = (e) => {
     setVotesToSkip(e.target.value);
@@ -37,16 +48,54 @@ export default function CreateRoom({ update }) {
         guest_can_pause: guestCanPause,
       }),
     };
-    const response = await fetch("/api/create/", requestOptions);
+    const response = await fetch("/api/create", requestOptions);
     const data = await response.json();
     history(`/room/${data.code}`);
+  };
+
+  const handleUpdateRoom = async () => {
+    const requestOptions = {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        votes_to_skip: votesToSkip,
+        guest_can_pause: guestCanPause,
+        code: roomCode,
+      }),
+    };
+    const response = await fetch("/api/update-room", requestOptions);
+    //const data = await response.json();
+    if (response.status == 200) {
+      setSuccessMessage("Room settings updated");
+      updateCallback();
+    } else if (response.status === 404) {
+      setError("Failed to update settings " + data.message);
+    } else {
+      setError("Update failed");
+    }
   };
 
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} align="center">
+        <Collapse in={successMessage != null || error != null}>
+          {successMessage ? (
+            <Alert severity="success" onClose={() => setSuccessMessage(null)}>
+              {successMessage}{" "}
+            </Alert>
+          ) : null}
+          {error ? (
+            <Alert severity="error" onClose={() => setError(null)}>
+              {error}{" "}
+            </Alert>
+          ) : null}
+        </Collapse>
+      </Grid>
+      <Grid item xs={12} align="center">
         <Typography component="h4" variant="h4">
-          Create a room
+          {update ? "Update Settings" : "Create a room"}
         </Typography>
       </Grid>
       <Grid item xs={12} align="center">
@@ -56,7 +105,7 @@ export default function CreateRoom({ update }) {
           </FormHelperText>
           <RadioGroup
             row
-            defaultValue={"true"}
+            defaultValue={guestCanPause.toString()}
             onChange={(e) => handleGuestCanPause(e)}
           >
             <FormControlLabel
@@ -80,7 +129,7 @@ export default function CreateRoom({ update }) {
             required={true}
             onChange={(e) => handleVotesChange(e)}
             type={"number"}
-            defaultValue={defaultVotes}
+            defaultValue={votesToSkip}
             inputProps={{
               min: 1,
               style: {
@@ -94,10 +143,16 @@ export default function CreateRoom({ update }) {
         </FormControl>
       </Grid>
       <Grid item xs={12} align="center">
-        <Button color="primary" variant="contained" onClick={handleCreateRoom}>
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={update ? handleUpdateRoom : handleCreateRoom}
+        >
           {update ? "Update Settings" : "Create a room"}
         </Button>
       </Grid>
+
+      {/* if update is true, 'HIDE SETTINGS' btn will be rendered from Room component in renderSettings function  */}
       {!update ? (
         <Grid item xs={12} align="center">
           <Button color="secondary" variant="contained" to="/" component={Link}>
@@ -108,4 +163,3 @@ export default function CreateRoom({ update }) {
     </Grid>
   );
 }
-//27:04
