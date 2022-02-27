@@ -11,6 +11,7 @@ export default function Room({ clearCode }) {
   const [guestCanPause, setGuestCanPause] = useState(false);
   const [isHost, setIsHost] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
 
   const getRoomDetails = async () => {
     const response = await fetch(`/api/get-room?code=${roomCode}`);
@@ -22,6 +23,7 @@ export default function Room({ clearCode }) {
       setGuestCanPause(data.guest_can_pause);
       setVotesToSkip(data.votes_to_skip);
       setIsHost(data.is_host);
+      if (data.is_host) authenticateSpotify();
     } else {
       clearCode();
       navigate("/");
@@ -31,6 +33,21 @@ export default function Room({ clearCode }) {
   useEffect(() => {
     getRoomDetails();
   }, []);
+
+  function authenticateSpotify() {
+    fetch("/spotify/is-authenticated")
+      .then((response) => response.json())
+      .then((data) => {
+        setSpotifyAuthenticated(data.status);
+        if (!data.status) {
+          fetch("/spotify/get-auth-url")
+            .then((response) => response.json())
+            .then((data) => {
+              window.location.replace(data.url);
+            });
+        }
+      });
+  }
 
   const leaveRoom = async () => {
     const requestOptions = {
