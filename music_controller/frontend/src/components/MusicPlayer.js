@@ -20,6 +20,24 @@ export default function MusicPlayer({
 }) {
   const songProgress = (time / duration) * 100;
 
+  function pauseSong() {
+    const requestOptions = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+    };
+    fetch("/spotify/pause", requestOptions);
+  }
+  function playSong() {
+    const requestOptions = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+    };
+    fetch("/spotify/play", requestOptions);
+  }
+  function handlePause() {
+    is_playing ? pauseSong() : playSong();
+  }
+
   return (
     <Card>
       <Grid container alignItems="center">
@@ -34,7 +52,7 @@ export default function MusicPlayer({
             {artist}
           </Typography>
           <div>
-            <IconButton>
+            <IconButton onClick={() => handlePause()}>
               {is_playing ? <PauseIcon /> : <PlayArrowIcon />}
             </IconButton>
             <IconButton>

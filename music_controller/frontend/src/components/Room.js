@@ -34,6 +34,7 @@ export default function Room({ clearCode }) {
 
   useEffect(() => {
     getRoomDetails();
+    getCurrentSong();
   }, []);
 
   useEffect(() => {
