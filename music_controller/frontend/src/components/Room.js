@@ -12,6 +12,7 @@ export default function Room({ clearCode }) {
   const [isHost, setIsHost] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
+  const [song, setSong] = useState({});
 
   const getRoomDetails = async () => {
     const response = await fetch(`/api/get-room?code=${roomCode}`);
@@ -32,6 +33,7 @@ export default function Room({ clearCode }) {
 
   useEffect(() => {
     getRoomDetails();
+    getCurrentSong();
   }, []);
 
   function authenticateSpotify() {
@@ -47,6 +49,18 @@ export default function Room({ clearCode }) {
             });
         }
       });
+  }
+
+  function getCurrentSong() {
+    fetch("/spotify/current-song")
+      .then((response) => {
+        if (!response.ok) {
+          return {};
+        } else {
+          return response.json();
+        }
+      })
+      .then((data) => setSong(data));
   }
 
   const leaveRoom = async () => {
@@ -111,10 +125,10 @@ export default function Room({ clearCode }) {
         </Grid>
         <Grid item xs={12} align="center">
           <Typography variant="h6" component="h6">
-            Votes required to skip: {votesToSkip}
+            Votes required to skip: {song.title}
           </Typography>
         </Grid>
-        <Grid item xs={12} align="center">
+        {/* <Grid item xs={12} align="center">
           <Typography variant="h6" component="h6">
             Guest can pause: {guestCanPause.toString()}
           </Typography>
@@ -123,7 +137,7 @@ export default function Room({ clearCode }) {
           <Typography variant="h6" component="h6">
             Host: {isHost.toString()}
           </Typography>
-        </Grid>
+        </Grid> */}
         {isHost ? renderSettingsButton() : null}
         <Grid item xs={12} align="center">
           <Button color="primary" variant="outlined" onClick={leaveRoom}>
