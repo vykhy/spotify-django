@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Grid, Button, Typography } from "@material-ui/core";
 import CreateRoom from "./CreateRoom";
+import MusicPlayer from "./MusicPlayer";
 
 export default function Room({ clearCode }) {
   const navigate = useNavigate();
@@ -33,7 +34,13 @@ export default function Room({ clearCode }) {
 
   useEffect(() => {
     getRoomDetails();
-    getCurrentSong();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(getCurrentSong, 5000);
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   function authenticateSpotify() {
@@ -60,7 +67,10 @@ export default function Room({ clearCode }) {
           return response.json();
         }
       })
-      .then((data) => setSong(data));
+      .then((data) => {
+        console.log("called");
+        setSong(data);
+      });
   }
 
   const leaveRoom = async () => {
@@ -123,14 +133,10 @@ export default function Room({ clearCode }) {
             Code: {roomCode}
           </Typography>
         </Grid>
-        <Grid item xs={12} align="center">
-          <Typography variant="h6" component="h6">
-            Votes required to skip: {song.title}
-          </Typography>
-        </Grid>
+        {song.title && <MusicPlayer {...song} />}
         {/* <Grid item xs={12} align="center">
           <Typography variant="h6" component="h6">
-            Guest can pause: {guestCanPause.toString()}
+            Playing: {song && song.is_playing.toString()}
           </Typography>
         </Grid>
         <Grid item xs={12} align="center">

@@ -59,13 +59,14 @@ def execute_spotify_api_request(session_id, endpoint, post_=False, put_=False):
 
     if post_:
         post(BASE_URL + endpoint, headers=header)
-    if put_:
+    elif put_:
         put(BASE_URL + endpoint, headers=header)
     
-    response = get(BASE_URL + endpoint, {}, headers=header)
-    try:
-        return response.json()
-    except:
-        return{'Error', 'Issue with request'}
+    else:
+        response = get(BASE_URL + endpoint, {}, headers=header)
+        try:
+            return response.json()
+        except:
+            return{'Error', 'Issue with request'}
 
 
