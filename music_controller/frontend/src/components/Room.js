@@ -15,18 +15,23 @@ export default function Room({ clearCode }) {
   const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
   const [song, setSong] = useState({});
 
+  /**
+   * get room details from the backend and update component
+   */
   const getRoomDetails = async () => {
     const response = await fetch(`/api/get-room?code=${roomCode}`);
     const status = await response.status;
 
     if (status === 200) {
       const data = await response.json();
-
+      // update state
       setGuestCanPause(data.guest_can_pause);
       setVotesToSkip(data.votes_to_skip);
       setIsHost(data.is_host);
+      // authenticate host with spotify
       if (data.is_host) authenticateSpotify();
     } else {
+      // or else remove code and redirect to home
       clearCode();
       navigate("/");
     }
@@ -38,12 +43,16 @@ export default function Room({ clearCode }) {
   }, []);
 
   useEffect(() => {
+    // set up polling for checking the current song and its status
     const interval = setInterval(getCurrentSong, 5000);
     return () => {
       clearInterval(interval);
     };
   }, []);
 
+  /**
+   * hit backend to authenticate host with spotify
+   */
   function authenticateSpotify() {
     fetch("/spotify/is-authenticated")
       .then((response) => response.json())
@@ -59,6 +68,9 @@ export default function Room({ clearCode }) {
       });
   }
 
+  /**
+   * get current song from the backend and update state
+   */
   function getCurrentSong() {
     fetch("/spotify/current-song")
       .then((response) => {
@@ -74,6 +86,9 @@ export default function Room({ clearCode }) {
       });
   }
 
+  /**
+   * leave room
+   */
   const leaveRoom = async () => {
     const requestOptions = {
       method: "POST",
@@ -85,6 +100,9 @@ export default function Room({ clearCode }) {
     });
   };
 
+  /**
+   * renders settings button
+   */
   const renderSettingsButton = () => {
     return (
       <Grid item xs={12} align="center">
@@ -99,6 +117,9 @@ export default function Room({ clearCode }) {
     );
   };
 
+  /**
+   *  renders settings page
+   */
   const renderSettings = () => {
     return (
       <Grid container spacing={1}>
@@ -135,16 +156,6 @@ export default function Room({ clearCode }) {
           </Typography>
         </Grid>
         {song.title && <MusicPlayer {...song} />}
-        {/* <Grid item xs={12} align="center">
-          <Typography variant="h6" component="h6">
-            Playing: {song && song.is_playing.toString()}
-          </Typography>
-        </Grid>
-        <Grid item xs={12} align="center">
-          <Typography variant="h6" component="h6">
-            Host: {isHost.toString()}
-          </Typography>
-        </Grid> */}
         {isHost ? renderSettingsButton() : null}
         <Grid item xs={12} align="center">
           <Button color="primary" variant="outlined" onClick={leaveRoom}>

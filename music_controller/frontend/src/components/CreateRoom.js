@@ -29,6 +29,7 @@ export default function CreateRoom(props) {
   const [successMessage, setSuccessMessage] = useState(null);
   const [error, setError] = useState(null);
 
+  // handle and update state
   const handleVotesChange = (e) => {
     setVotesToSkip(e.target.value);
   };
@@ -37,6 +38,11 @@ export default function CreateRoom(props) {
     setGuestCanPause(e.target.value === "true" ? true : false);
   };
 
+  /**
+   * create a room
+   * hit api endpoint to create a room
+   * host automatically joins room
+   */
   const handleCreateRoom = async () => {
     const requestOptions = {
       method: "POST",
@@ -53,6 +59,9 @@ export default function CreateRoom(props) {
     history(`/room/${data.code}`);
   };
 
+  /**
+   * update room settings
+   */
   const handleUpdateRoom = async () => {
     const requestOptions = {
       method: "PATCH",

@@ -17,8 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('api.urls') ),
-    path('spotify/', include('spotify.urls')),
-    path('', include('frontend.urls'))
+    path('admin/', admin.site.urls),            # admin site
+    path('api/', include('api.urls') ),         # app backend
+    path('spotify/', include('spotify.urls')),  # interact with spotify api
+    path('', include('frontend.urls'))          # app frontend
 ]

@@ -7,6 +7,9 @@ export default function RoomJoinPage() {
   const [roomCode, setRoomCode] = useState();
   const [error, setError] = useState();
 
+  /**
+   * join room and update state
+   */
   const handleJoinRoom = async () => {
     const requestOptions = {
       method: "POST",

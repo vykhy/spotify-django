@@ -42,6 +42,10 @@ const RenderHomePage = ({ code }) => {
 export default function Home() {
   const [roomCode, setRoomCode] = useState(null);
 
+  /**
+   * check if user was in a room in current session, and if true
+   * automatically join and redirect to that room
+   */
   const a = async () => {
     const response = await fetch("/api/user-in-room");
     const data = await response.json();
@@ -51,6 +55,9 @@ export default function Home() {
     a();
   });
 
+  /**
+   * clear room code
+   */
   const clearCode = () => {
     setRoomCode(null);
   };

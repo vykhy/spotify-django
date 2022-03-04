@@ -18,8 +18,12 @@ export default function MusicPlayer({
   time,
   duration,
 }) {
+  // to manage song progress bar
   const songProgress = (time / duration) * 100;
 
+  /**
+   * pauses song on spotify api
+   */
   function pauseSong() {
     const requestOptions = {
       method: "PUT",
@@ -27,6 +31,9 @@ export default function MusicPlayer({
     };
     fetch("/spotify/pause", requestOptions);
   }
+  /**
+   * plays song on spotify api
+   */
   function playSong() {
     const requestOptions = {
       method: "PUT",
@@ -34,6 +41,7 @@ export default function MusicPlayer({
     };
     fetch("/spotify/play", requestOptions);
   }
+  /**handles play/pause button */
   function handlePause() {
     is_playing ? pauseSong() : playSong();
   }
