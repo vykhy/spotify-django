@@ -17,10 +17,22 @@ export default function MusicPlayer({
   is_playing,
   time,
   duration,
+  votes,
+  votes_required,
 }) {
   // to manage song progress bar
   const songProgress = (time / duration) * 100;
 
+  /**
+   * call backend to handle skip song request
+   */
+  function skipSong() {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    };
+    fetch("/spotify/skip", requestOptions);
+  }
   /**
    * pauses song on spotify api
    */
@@ -63,8 +75,9 @@ export default function MusicPlayer({
             <IconButton onClick={() => handlePause()}>
               {is_playing ? <PauseIcon /> : <PlayArrowIcon />}
             </IconButton>
-            <IconButton>
+            <IconButton onClick={() => skipSong()}>
               <SkipNextIcon />
+              {votes} / {votes_required}
             </IconButton>
           </div>
         </Grid>

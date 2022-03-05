@@ -2,6 +2,9 @@ from .models import SpotifyToken
 from django.utils import timezone
 from datetime import timedelta
 from requests import post, put, get
+import environ
+
+env = environ.Env()
 
 BASE_URL='https://api.spotify.com/v1/me/'
 
@@ -86,4 +89,8 @@ def play_song(session_id):
 # call spotify api to pause song
 def pause_song(session_id):
     return execute_spotify_api_request(session_id, 'player/pause', put_=True)
+
+# call spotify api to skip song
+def skip_song(session_id):
+    return execute_spotify_api_request(session_id, 'player/next', post_=True)
 

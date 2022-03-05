@@ -81,7 +81,6 @@ export default function Room({ clearCode }) {
         }
       })
       .then((data) => {
-        console.log("called");
         setSong(data);
       });
   }
